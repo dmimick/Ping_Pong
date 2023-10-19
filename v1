@@ -13,6 +13,22 @@ class Game_sprite(sprite.Sprite):
     def reset(self):
         win.blit(self.image, (self.rect.x, self.rect.y))
 
+class Player(Game_sprite):
+    def update_r(self):
+        keys = key.get_pressed()
+        if keys[K_UP] and self.rect.y > 5:
+            self.rect.y -= self.speed
+        if keys[K_DOWN] and self.rect.y < win_h - 80:
+            self.rect.y += self.speed
+    def update_l(self):
+        keys = key.get_pressed()
+        if keys[K_w] and self.rect.y > 5:
+            self.rect.y -= self.speed
+        if keys[K_s] and self.rect.y < win_h - 80:
+            self.rect.y += self.speed
+
+platform1 = Player('platform1.png', 30, 200, 90, 90, 10) 
+platform2 = Player('platform2.png', 520, 200, 90, 90, 10)
 ball = Game_sprite("ball.png", 200 , 100, 50, 50 , 10)
 
 fon = (187,8,23)
@@ -25,6 +41,13 @@ game = True
 Finish = False
 
 
+font.init()
+font1 = font.Font(None, 50)
+text1 = font1.render('Игрок 1 проиграл', True, (255, 255, 255))
+text2 = font1.render('Игрок 2 проиграл', True, (255, 255, 255))
+speed_x = 10
+speed_y = 10
+
 clock = time.Clock()
 while game:
     
@@ -34,6 +57,22 @@ while game:
 
     if Finish != True:
         win.fill(fon)
+        ball.rect.x += speed_x  
+        ball.rect.y += speed_y
+        if sprite.collide_rect(platform1, ball) or sprite.collide_rect(platform2, ball):
+            speed_x *= -1
+            speed_y *= 1
+        if ball.rect.y > win_h - 80 or ball.rect.y < 0:
+            speed_y *= -1
+        if ball.rect.x < 0:
+            finish = True
+            win.blit(text1, (200, 200))
+            game = True
+        if ball.rect.x > win_w:
+            finish = True
+            win.blit(text2, (200, 200))
+            game = True
+
         ball.reset()
 
     display.update()
